@@ -1,5 +1,6 @@
 import Navbar from "./components/Navbar";
 import Heading from "./components/heading";
+import SearchBar from "./components/searchBar";
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
           This is your software design automation workbench. Start building from high-level requirements!
         </p>
       </div>
+      <SearchBar />
     </>
   );
 }

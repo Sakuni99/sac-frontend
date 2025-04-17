@@ -9,6 +9,7 @@ export interface ChatEntry {
   searchText?: string;
   responseText?: string;
   timestamp?: number;
+  architecture?: string;
 }
 
 export default function SearchBar() {
@@ -16,15 +17,7 @@ export default function SearchBar() {
   const [searchText, setSearchText] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [chatHistory, setChathistory] = useState<ChatEntry[]>([
-    {
-      searchText:
-        "what is the best architecture for a customer management system",
-      responseText:
-        "Cras ultricies lobortis massa, non consectetur ante accumsan quis. Praesent sed pharetra turpis. Donec neque justo, auctor ut rutrum in, mattis vel sem. Suspendisse id volutpat felis. In id lorem vitae odio feugiat rhoncus consectetur adipiscing elit. Integer eget rutrum velit, nec ultrices odio. Aenean sit amet velit purus. Etiam tincidunt tincidunt rutrum. Aliquam ultricies ante lobortis, tristique mauris eu, venenatis enim. Nulla non convallis odio. Aliquam sit amet scelerisque nisi, nec dignissim velit. Morbi nibh lorem, aliquam vitae velit sit amet, rhoncus faucibus turpis. Donec in leo tincidunt, malesuada lacus a, interdum nunc. Quisque et varius risus, nec dictum eros. Suspendisse ornare, elit vel ultrices tempus, purus magna gravida lorem, tincidunt vehicula lectus tortor ac ante. Praesent congue mollis magna, ut luctus ligula vulputate non. Nam vel metus at eros condimentum ultrices ut in turpis. Sed laoreet lacus ac sem vehicula, a accumsan purus posuere. Praesent facilisis suscipit tempor. Morbi quis sagittis enim. Duis pretium, lectus et dapibus molestie, libero orci mattis quam, eu finibus ligula ipsum sit amet mi. Cras ultricies lobortis massa, non consectetur ante accumsan quis. Praesent sed pharetra turpis. Donec neque justo, auctor ut rutrum in, mattis vel sem. Suspendisse id volutpat felis. In id lorem vitae odio feugia",
-      timestamp: 1744715316584,
-    },
-  ]);
+  const [chatHistory, setChathistory] = useState<ChatEntry[]>([]);
 
   const handleSearchTextChange = (event: ChangeEvent<HTMLInputElement>) => {
     setSearchText(event.target.value);
@@ -39,27 +32,29 @@ export default function SearchBar() {
       {
         searchText,
         timestamp,
-        responseText: "hehuhue",
       },
     ]);
     setSearchText("");
-
     try {
-      // const response = await fetch(
-      //   `https://api.example.com/search?query=${searchText}`
-      // );
-      // if (!response.ok) {
-      //   throw new Error("Network response was not ok");
-      // }
-      // const data = await response.json();
-      // setChathistory((prev) => [
-      //   ...prev,
-      //   {
-      //     searchText,
-      //     responseText: data.result,
-      //     timestamp,
-      //   },
-      // ]);
+      const response = await fetch("http://127.0.0.1:5000/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: searchText }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const data = await response.json();
+      setChathistory((prev) => [
+        ...prev,
+        {
+          responseText: data.explanation,
+          timestamp,
+          architecture: data.Architecture || data.architecture,
+        },
+      ]);
     } catch (error) {
       setError((error as Error).message);
     } finally {

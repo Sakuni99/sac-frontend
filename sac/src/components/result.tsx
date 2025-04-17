@@ -1,3 +1,4 @@
+import MermaidChart from "./Mermaid";
 import { ChatEntry } from "./searchBar";
 
 interface ResultProps {
@@ -5,7 +6,7 @@ interface ResultProps {
 }
 
 function Result(props: ResultProps) {
-  const { searchText, responseText } = props.result;
+  const { searchText, responseText, architecture } = props.result;
   return (
     <div className="flex flex-col gap-2 my-2">
       {searchText && (
@@ -13,12 +14,19 @@ function Result(props: ResultProps) {
           {searchText}
         </div>
       )}
+      {architecture && <MermaidChart chart={architecture} />}
       {responseText && (
         <div className="self-start bg-gray-100 text-gray-900 px-4 py-2 rounded-xl max-w-[95%]">
           {responseText}
         </div>
       )}
     </div>
+    // <div className="mb-6">
+    //   {searchText && <p className="font-semibold mb-1">You: {searchText}</p>}
+    //   {architecture && <MermaidChart chart={architecture} />}
+    //   {responseText && <p className="text-gray-700">{responseText}</p>}
+    //   {responseText && <p className="text-gray-700">{responseText}</p>}
+    // </div>
   );
 }
 

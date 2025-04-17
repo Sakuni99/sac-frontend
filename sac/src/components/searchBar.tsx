@@ -33,13 +33,14 @@ export default function SearchBar() {
     setSearchText(event.target.value);
   };
 
-  const getchatResponse = async (prompt: string): Promise<chatResponse> => {
+  const getchatResponse = async (message: string): Promise<chatResponse> => {
+    console.log("Sending message to backend:", message);
     const res = await fetch("http://127.0.0.1:5000/chat", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ prompt }),
+      body: JSON.stringify({ message }),
     });
   
     if (!res.ok) {

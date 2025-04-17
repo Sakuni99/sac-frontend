@@ -10,6 +10,9 @@ export interface ChatEntry {
   responseText?: string;
   timestamp?: number;
 }
+export interface chatResponse {
+  response: string;
+}
 
 export default function SearchBar() {
   const bottomRef = useRef<HTMLDivElement | null>(null);
@@ -30,41 +33,45 @@ export default function SearchBar() {
     setSearchText(event.target.value);
   };
 
+  const getchatResponse = async (prompt: string): Promise<chatResponse> => {
+    const res = await fetch("http://127.0.0.1:5000/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ prompt }),
+    });
+  
+    if (!res.ok) {
+      throw new Error("Failed to fetch from backend");
+    }
+  
+    return await res.json();
+  };
+
   const handleSearch = async () => {
     setIsLoading(true);
     setError(null);
     const timestamp = Date.now();
-    setChathistory((prev) => [
-      ...prev,
-      {
-        searchText,
-        timestamp,
-        responseText: "hehuhue",
-      },
-    ]);
-    setSearchText("");
-
-    try {
-      // const response = await fetch(
-      //   `https://api.example.com/search?query=${searchText}`
-      // );
-      // if (!response.ok) {
-      //   throw new Error("Network response was not ok");
-      // }
-      // const data = await response.json();
-      // setChathistory((prev) => [
-      //   ...prev,
-      //   {
-      //     searchText,
-      //     responseText: data.result,
-      //     timestamp,
-      //   },
-      // ]);
-    } catch (error) {
-      setError((error as Error).message);
-    } finally {
-      setIsLoading(false);
-    }
+    getchatResponse(searchText)
+      .then((data) => {
+        setChathistory((prev) => [
+          ...prev,
+          {
+            searchText: searchText,
+            responseText: data.response,
+            timestamp: timestamp,
+          },
+        ]);
+        setSearchText("");
+      }
+      ).catch((err) => {
+        setError(err.message);
+      }
+      ).finally(() => {
+        setIsLoading(false);
+      }
+      );
   };
 
   useEffect(() => {
